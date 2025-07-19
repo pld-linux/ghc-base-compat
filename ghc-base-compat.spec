@@ -4,6 +4,7 @@
 #
 %define		pkgname	base-compat
 Summary:	A compatibility layer for basees
+Summary(pl.UTF-8):	Warstwa zgodności dla bibliotek bazowych
 Name:		ghc-%{pkgname}
 Version:	0.11.1
 Release:	2
@@ -13,13 +14,17 @@ Group:		Development/Languages
 Source0:	http://hackage.haskell.org/package/%{pkgname}-%{version}/%{pkgname}-%{version}.tar.gz
 # Source0-md5:	9a6eecc853910b79b6f8b34079349e6a
 URL:		http://hackage.haskell.org/package/base-compat
-BuildRequires:	ghc >= 6.12.3
+BuildRequires:	ghc >= 7.0.1
+BuildRequires:	ghc-base >= 4.3
+BuildRequires:	ghc-base < 5
 %if %{with prof}
 BuildRequires:	ghc-prof
+BuildRequires:	ghc-base-prof >= 4.3
 %endif
 BuildRequires:	rpmbuild(macros) >= 1.608
 %requires_eq	ghc
 Requires(post,postun):	/usr/bin/ghc-pkg
+Requires:	ghc-base >= 4.3
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 # debuginfo is not useful for ghc
@@ -33,11 +38,17 @@ Provides functions available in later versions of base to a wider
 range of compilers, without requiring you to use CPP pragmas in your
 code.
 
+%description -l pl.UTF-8
+Ta biblioteka dostarcza funkcje dostępne w nowszych wersjach
+biblioteki bazowej dla szerszego zakresu kompilatorów bez konieczności
+używania dyrektyw CCP w kodzie.
+
 %package prof
 Summary:	Profiling %{pkgname} library for GHC
 Summary(pl.UTF-8):	Biblioteka profilująca %{pkgname} dla GHC
 Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
+Requires:	ghc-base-prof >= 4.3
 
 %description prof
 Profiling %{pkgname} library for GHC.  Should be installed when
@@ -59,6 +70,7 @@ runhaskell Setup.lhs configure -v2 \
 	--docdir=%{_docdir}/%{name}-%{version}
 
 runhaskell Setup.lhs build
+
 runhaskell Setup.lhs haddock --executables
 
 %install
@@ -93,7 +105,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc CHANGES.markdown README.markdown %{name}-%{version}-doc/*
 %{_libdir}/%{ghcdir}/package.conf.d/%{pkgname}.conf
-%{_libdir}/%{ghcdir}/%{pkgname}-%{version}/*.so
+%attr(755,root,root) %{_libdir}/%{ghcdir}/%{pkgname}-%{version}/*.so
 %{_libdir}/%{ghcdir}/%{pkgname}-%{version}/*.a
 %exclude %{_libdir}/%{ghcdir}/%{pkgname}-%{version}/*_p.a
 
